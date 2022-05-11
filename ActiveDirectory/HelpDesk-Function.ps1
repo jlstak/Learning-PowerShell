@@ -17,7 +17,6 @@ $userMGR = "OU=Managers,DC=Adatum,DC=com"
 
 #Computer objects
 
-
 #Option input
 $input = Read-Host "OPTIONS:
 
@@ -31,7 +30,7 @@ Enter Option"
 
 
 if ($input -eq 1){
-$userCN = Read-Host "Enter User CN (eg. Bruce Banner):"
+$userCN = Read-Host "Enter User CN to enable (eg. Bruce Banner):"
 while ($userCN -ne "n") {
    Get-ADUser -filter "Name -eq '$userCN'" -SearchBase $userDOM | Enable-ADAccount > $null
     if ($? -eq $true) {
@@ -42,13 +41,41 @@ while ($userCN -ne "n") {
      }
  
  if ($input -eq 2){
-    $userCN = Read-Host "Enter User CN (eg. Tony Stark):"
+    $userCN = Read-Host "Enter User CN to disable (eg. Tony Stark):"
         while ($userCN -ne "n") {
         Get-ADUser -filter "Name -eq '$userCN'" -SearchBase $userDOM | Disable-ADAccount > $null
         if ($? -eq $true) {
-        Write-Host "Success. $userCN has been disabled." -ForegroundColor Green -BackgroundColor yellow }
+        Write-Host "Success. $userCN has been disabled." -ForegroundColor Green }
             else {
-        Write-Host "$userCN is not found." -ForegroundColor Red -BackgroundColor yellow }
+        Write-Host "$userCN is not found." -ForegroundColor Red }
         $userCN = Read-Host "Any more users to disable? If not, enter N:"
   }
  }
+ if ($input -eq 3){
+    $userCN = Read-Host "Enter User CN to Unlock (eg. Clint Barton):"
+        while ($userCN -ne "n") {
+        Get-ADUser -filter "Name -eq '$userCN'" -SearchBase $userDOM | Unlock-ADAccount > $null
+        if ($? -eq $true) {
+        Write-Host "Success. $userCN has been unlocked." -ForegroundColor Green}
+            else {
+        Write-Host "$userCN is not found." -ForegroundColor Red }
+        $userCN = Read-Host "Any more users to unlock? If not, enter N:"
+  }
+ }
+if ($input -eq 10){
+$compName = Read-Host "Enter computer name to restart (eg. loki-pc)"
+    if ($compName -eq "") {
+    $compName = $env:COMPUTERNAME
+    write-host "Computer name cannot be blank." -ForegroundColor Cyan
+    break
+    }
+
+    if (Test-Connection $compName -count 2 -Quiet) {
+    
+    Restart-Computer -ComputerName $compName -Force
+    Write-Host "Restarting computer...$compName" -ForegroundColor Green
+    }
+    else {
+    Write-Host "Either $compName is offline or does not exist." -ForegroundColor Red
+    }
+}
