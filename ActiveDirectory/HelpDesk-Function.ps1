@@ -18,15 +18,16 @@ $userMGR = "OU=Managers,DC=Adatum,DC=com"
 #Computer objects
 
 #Option input
-$input = Read-Host "OPTIONS:
+$input = Read-Host "= OPTIONS =
 
 1 - Enable User
 2 - Disable User
 3 - Unlock User
-10 - Restart client computer
-11 - 
+4 - ..
+5 - ..
+6 - Restart client computer
 
-Enter Option"
+Select an option"
 
 
 if ($input -eq 1){
@@ -62,20 +63,34 @@ while ($userCN -ne "n") {
         $userCN = Read-Host "Any more users to unlock? If not, enter N:"
   }
  }
-if ($input -eq 10){
-$compName = Read-Host "Enter computer name to restart (eg. loki-pc)"
-    if ($compName -eq "") {
-    $compName = $env:COMPUTERNAME
-    write-host "Computer name cannot be blank." -ForegroundColor Cyan
-    break
-    }
 
-    if (Test-Connection $compName -count 2 -Quiet) {
+if ($input -eq 6){
+$compName = Read-Host "Enter computer name to restart (eg. loki-pc)"
+    while ($compName -eq "") {
+    #$compName = $env:COMPUTERNAME
+    write-host "Computer name cannot be blank." -ForegroundColor Yellow
     
+    #return question
+    $compName = Read-Host "Enter computer name to restart (eg. loki-pc)"
+    }
+    
+    if (Test-Connection $compName -count 2 -Quiet){     #($compName -ne "") 
+       
     Restart-Computer -ComputerName $compName -Force
     Write-Host "Restarting computer...$compName" -ForegroundColor Green
-    }
+       }
+   
     else {
-    Write-Host "Either $compName is offline or does not exist." -ForegroundColor Red
+    Write-Host "Either $compName is offline or does not exist." -ForegroundColor Magenta
+    
+    <# return question
+    $compName = Read-Host "Enter computer name to restart (eg. loki-pc)"
+    
+  
+    if (Test-Connection $compName -count 2 -Quiet) {  
+    Restart-Computer -ComputerName $compName -Force
+    Write-Host "Restarting computer...$compName" -ForegroundColor Green
+        } 
+     #>
     }
-}
+}}
